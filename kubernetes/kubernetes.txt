@@ -1,0 +1,103 @@
+Vídeo descomplicando Kubernetes.
+
+Control plane => Controla o cluster Kubernetes.
+
+Worker => O cara que segura os pods.
+
+
+Dentro do Control Plane
+Etcd => Banco de dados do cluster kubernetes.
+
+Scheduler => Agendador de recursos para os pods.
+
+Controller manager => gerenciador do cluster, faz double check nos pods para verificar se os parâmetros.
+
+API SERVER => Interface que integra ao cluster.
+
+Dentro do Worker
+kubelet => gerenciador do pod
+kube proxy=> proxy, viabiliza acesso do nó ao cluster.
+
+container != pod (minima unidade do kubernetes, pode ter mais de 1 container incluido)
+
+EKS (AWS) => Cluster kubernetes gerenciado.
+
+
+Portas open para o control plane:
+
+API SERVER -> 6443 TCP
+
+etcd server -> 2379 -2380 - TCP
+
+kubelet -> 10250
+
+scheduler -> 10251
+
+controller -> 10252
+
+Portas para os workers:
+
+kubelet -> 10250
+
+nodeport -> 30000 -> 32767
+
+
+Outros conceitos:
+
+Pod: Menor unidade dentro do kubernetes
+
+Deployment: Controladores comando para criar e garantir o número de réplicas para os pods
+
+Replica Set: Principal controller do Pod. 
+
+Nodes: Máquinas que rodam o cluster, podem conter diversos pods.
+
+Service: Controle de acesso na borda para o usuário. Por exemplo, se tiver um NGINX na borda ele vai receber a req do user e depois vai encaminhar para os pods dentro do cluster. Três tipos = node ports (porta do node para expor o serviço), load balancer (integrado e criado no serviço para balanceamento de recurso), cluster IP (serviço válido apenas dentro do cluster).
+
+Endpoint= controlador que mantém todos os ips dos pods.
+
+Kubectl = comando para interagir com todo o cluster.
+
+instalar com o curl o kubectl
+
+
+sudo usermod -aG docker $USER && newgrp docker -> Da permissao 
+
+kubectl get pods -A -o wide - exibe todos os pods dos namespaces e os IPs responsaveis.
+
+
+criar novos namespaces para rodar ->
+
+kubectl run nome --image nomedoservi;o --port => cria um pod. 
+
+kubectl get services
+
+kubectl expose pod nome --type (NodePort,LoadBalancer)
+
+cd /proc/NUMPID/ => Entra no proc para ver o processo em execucao no linux sem o ps
+cat cmdline - ve a descricao do ps.
+
+
+criar deployment
+
+kubectl comandocompletoqualquer -o yaml => Nao executa e imprime na tela um yaml que faz o uso.
+exemplo:
+kubectl create deployment strigus --image nginx --replicas 10 -n giropops --port 80 --dry-run=client -o yaml > meu-deployment.yaml
+kubectl apply -f meu-deployment.yaml -> aplica o yaml
+
+--dry-run=client - apenas simula o comando, nao executa.
+
+kubectl explain nomes -> explica alguma coisa do kubernetes, acesso via manual.
+
+
+
+
+
+
+
+
+
+
+
+
+
