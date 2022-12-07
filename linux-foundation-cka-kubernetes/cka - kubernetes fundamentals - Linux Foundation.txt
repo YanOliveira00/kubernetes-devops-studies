@@ -1,0 +1,119 @@
+lab 3.1 - 
+
+
+ wget https://training.linuxfoundation.org/cm/LFS258/LFS258_V2022-10-21_SOLUTIONS.tar.xz \
+--user=LFtraining --password=Penguin2014
+
+finalizado 
+
+lab 3.2 - 
+
+cat << EOF | tee /etc/sysctl.d/kubernetes.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+sudo sysctl --system
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+apt install containerd -y
+
+
+
+
+inet 10.90.1.92/24 brd 10.90.1.255 scope global ens192
+inet6 fe80::250:56ff:fe86:7f3c/64 scope link
+
+lab 3.3. - corrigindo o cluster
+
+kubectl describe node xxxx - dá informações do cluster físico
+
+
+
+lab 3.4 - deploy de uma aplicação simples.
+
+kubectl create deployment nginx --image=nginx
+kubectl get deployments
+kubectl describe deployment nginx
+kubectl get events
+
+
+kube@kube-cp-lf:~$ kubectl get svc nginx
+NAME    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+nginx   ClusterIP   10.110.13.121   <none>        80/TCP    2m56s
+kube@kube-cp-lf:~$ kubectl get ep nginx
+NAME    ENDPOINTS            AGE
+nginx   192.168.218.134:80   3m3s
+
+
+ESCALAR!!!
+
+kube@kube-cp-lf:~$ kubectl get deployments.apps nginx
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+nginx   1/1     1            1           59m
+kube@kube-cp-lf:~$ kubectl scale deployment nginx --replicas=3
+deployment.apps/nginx scaled
+kube@kube-cp-lf:~$ kubectl get deployments.apps nginx
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+nginx   2/3     3            2           59m
+kube@kube-cp-lf:~$
+
+
+LAB 3.5 - Expose para fora do cluster.
+
+HISTORY do LAB:
+
+133  kubectl create deployment two --image=nginx --dry-run=client -o yaml
+  134  kubectl get deployment
+  135  kubectl get deployments.apps nginx -o yaml
+  136  kubectl get deployments.apps nginx -o json
+  137  kubectl expose -h
+  138  kubectl expose deployment/nginx
+  139  vim first.yaml
+  140  kubectl replace -f first.yaml
+  141  kubectl get deploy,pod
+  142  kubectl expose deployment/nginx
+  143  kubectl get svc nginx
+  144  kubectl get ep nginx
+  145  kubectl describe pod nginx-7cbc4b4d9c-d27xw | grep Node:
+  146  kubectl describe pod nginx-6c8b449b8f-pfrzv | grep Node:
+  147  curl 192.168.218.134:80
+  148  curl 10.110.13.121:80
+  149  kubectl get deployments.apps nginx
+  150  kubectl scale deployment nginx --replicas=3
+  151  kubectl get deployments.apps nginx
+  152  kubectl get ep nginx
+  153  kubectl delete pod nginx-6c8b449b8f-bqbrm
+  154  kubectl get po
+  155  curl 10.90.1.92:80
+  156  curl 10.110.13.121:80
+  157  kubectl get po
+  158  kubectl get po --All-namespaces
+  159  kubectl get po --all-namespaces
+  160  kubectl exec nginx-6c8b449b8f-8vvk7 -- printenv | grep KUBERNETES
+  161  kubectl exec nginx-6c8b449b8f-8vvk7 -- ls -lha
+  162  kubectl exec nginx-6c8b449b8f-8vvk7 -- printenv | grep KUBERNETES
+  163  kubectl get svc
+  164  kubectl get svc nginx
+  165  kubectl delete svc nginx
+  166  kubectl expose deployment nginx --type=LoadBalancer
+  167  kubectl get svc
+  168  curl ifconfig.io
+  169  kubectl get svc
+  170  curl ifconfig.io
+  171  kubectl scale deployment nginx --replicas=0
+  172  kubectl get po
+  173  kubectl scale deployment nginx --replicas=2
+  174  kubectl get po
+  175  kubectl delete deployments.apps nginx
+  176  kubectl delete ep nginx
+  177  kubectl delete svc nginx
+  178  history
+
+CAP 04 - 
+Kubernetes cluster - montado com um ou mais control-plane node e um conjunto de workes anexados a eles, montado via API calls para os operadores. 
+NEtwork Plugin. 
+kubeadm upgrade plan - para garantir que as versões coincidam entre os controls planes e workers
+
+control-plane node - 
+	kube-apiserver - Central de operação do cluster, todas calls, internas e externas são gerenciados pelo agente API.Todas as ações são acietas e validadas por ele, além de ser a única conexão com o banco de dados etcd
+
